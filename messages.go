@@ -106,6 +106,7 @@ func sendRandomPhotoMessage(count int, update *tgbotapi.Update, bot *tgbotapi.Bo
 	var photoRecords []PhotoRecord
 	for i, path := range randomPhotoPaths {
 		photo := tgbotapi.NewInputMediaPhoto(tgbotapi.FilePath(path))
+		photo.HasSpoiler = cfg.photoSpoiler
 
 		// set caption only for the first photo
 		if i == 0 {

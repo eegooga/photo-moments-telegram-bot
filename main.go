@@ -627,6 +627,7 @@ func sendMemoryPhotos(requestType PhotoRequestType, yearsAgo int, update *tgbota
 
 		for i, path := range processedPhotos {
 			photo := tgbotapi.NewInputMediaPhoto(tgbotapi.FilePath(path))
+			photo.HasSpoiler = cfg.photoSpoiler
 
 			// Set caption only for the first photo in the group
 			if i == 0 {
