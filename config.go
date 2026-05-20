@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var keyChatId = "FM_CHAT_ID"
@@ -19,6 +20,10 @@ var keyDebug = "FM_DEBUG"
 var keyMemoriesCronSpec = "FM_MEMORIES_CRON_SPEC"
 var keyMemoriesPhotoCount = "FM_MEMORIES_PHOTO_COUNT"
 var keyReindexCronSpec = "FM_REINDEX_CRON_SPEC"
+var keyPhotoSpoiler = "FM_PHOTO_SPOILER"
+var keyRussianRoulette = "FM_RUSSIAN_ROULETTE"
+var keyRouletteAdminID = "FM_RUSSIAN_ROULETTE_ADMIN_ID"
+var keyRouletteCooldownMinutes = "FM_RUSSIAN_ROULETTE_COOLDOWN_MINUTES"
 
 var keyTelegramProxyURL = "FM_TELEGRAM_PROXY_URL"
 var keyTelegramProxyUser = "FM_TELEGRAM_PROXY_USER"
@@ -40,6 +45,10 @@ type Config struct {
 	telegramProxyURL   string
 	telegramProxyUser  string
 	telegramProxyPass  string
+	photoSpoiler       bool
+	russianRoulette    bool
+	rouletteAdminID    int64
+	rouletteCooldown   time.Duration
 }
 
 // TODO: rewrite configs with go-flags
@@ -125,6 +134,36 @@ func getConfig() Config {
 		reindexCronSpec = overrideReindexCronSpec
 	}
 
+	photoSpoiler := false
+	overridePhotoSpoiler, err := strconv.ParseBool(os.Getenv(keyPhotoSpoiler))
+	if err == nil {
+		photoSpoiler = overridePhotoSpoiler
+	}
+
+	russianRoulette := false
+	overrideRussianRoulette, err := strconv.ParseBool(os.Getenv(keyRussianRoulette))
+	if err == nil {
+		russianRoulette = overrideRussianRoulette
+	}
+
+	rouletteAdminID := int64(0)
+	overrideRouletteAdminID := os.Getenv(keyRouletteAdminID)
+	if overrideRouletteAdminID != "" {
+		parsedAdminID, parseErr := strconv.ParseInt(overrideRouletteAdminID, 10, 64)
+		if parseErr == nil {
+			rouletteAdminID = parsedAdminID
+		}
+	}
+
+	rouletteCooldownMinutes := 60
+	overrideRouletteCooldown := os.Getenv(keyRouletteCooldownMinutes)
+	if overrideRouletteCooldown != "" {
+		parsedCooldown, parseErr := strconv.Atoi(overrideRouletteCooldown)
+		if parseErr == nil && parsedCooldown > 0 {
+			rouletteCooldownMinutes = parsedCooldown
+		}
+	}
+
 	return Config{
 		chatId:             int64(chatId),
 		allowedUserIds:     allowedUserIds,
@@ -141,5 +180,9 @@ func getConfig() Config {
 		telegramProxyURL:   os.Getenv(keyTelegramProxyURL),
 		telegramProxyUser:  os.Getenv(keyTelegramProxyUser),
 		telegramProxyPass:  os.Getenv(keyTelegramProxyPass),
+		photoSpoiler:       photoSpoiler,
+		russianRoulette:    russianRoulette,
+		rouletteAdminID:    rouletteAdminID,
+		rouletteCooldown:   time.Duration(rouletteCooldownMinutes) * time.Minute,
 	}
 }

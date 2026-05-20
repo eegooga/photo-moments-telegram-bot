@@ -139,6 +139,8 @@ func main() {
 		{Command: "indexing", Description: "Show photo indexing status"},
 		{Command: "reindex", Description: "Start photo reindexing (full/diff)"},
 		{Command: "info", Description: "Show photo info (reply to photo or use /info N for Nth photo)"},
+		{Command: "roulette_stats", Description: "Show your Russian roulette stats"},
+		{Command: "roulette_reset", Description: "Reset roulette drum (admin only)"},
 	}
 
 	// Set bot commands
@@ -170,18 +172,63 @@ func main() {
 			if update.Message.IsCommand() {
 				switch update.Message.Command() {
 				case "photo":
-					userPhotoCount, parseUserCountErr := strconv.Atoi(update.Message.CommandArguments())
-					if parseUserCountErr != nil {
-						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
-							"Please send a number")
-						continue
+					userPhotoCount := 1
+					if strings.TrimSpace(update.Message.CommandArguments()) != "" {
+						parsedCount, parseUserCountErr := strconv.Atoi(update.Message.CommandArguments())
+						if parseUserCountErr != nil {
+							sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+								"Please send a number")
+							continue
+						}
+						userPhotoCount = parsedCount
 					}
 					if userPhotoCount < 1 {
 						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
 							"Please send a number greater than 0")
 						continue
 					}
+
+					blocked, loseImagePath, rrErr := tryRussianRoulette(&update)
+					if rrErr != nil {
+						log.Printf("Roulette error: %v", rrErr)
+					} else if blocked {
+						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot, loseImagePath)
+						continue
+					} else if loseImagePath != "" {
+						losePhoto := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FilePath(loseImagePath))
+						losePhoto.Caption = "💥 You lose"
+						losePhoto.ReplyParameters.MessageID = update.Message.MessageID
+						if _, sendErr := sendMessageWithRetry(bot, losePhoto); sendErr != nil {
+							sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+								"Roulette loss, but image not sent")
+						}
+						continue
+					}
+
 					sendRandomPhoto(userPhotoCount, &update, bot)
+
+				case "roulette_stats":
+					stats, err := getUserRouletteStats(update.Message.From.ID)
+					if err != nil {
+						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+							fmt.Sprintf("Error loading roulette stats: %v", err))
+						break
+					}
+					sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot, stats)
+
+				case "roulette_reset":
+					if update.Message.From.ID != cfg.rouletteAdminID {
+						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+							"You are not allowed to use /roulette_reset")
+						break
+					}
+					msg, err := resetRoulette(update.Message.From.ID)
+					if err != nil {
+						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+							fmt.Sprintf("Error resetting roulette: %v", err))
+						break
+					}
+					sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot, msg)
 
 				case "info":
 					infoArg := update.Message.CommandArguments()
@@ -627,6 +674,7 @@ func sendMemoryPhotos(requestType PhotoRequestType, yearsAgo int, update *tgbota
 
 		for i, path := range processedPhotos {
 			photo := tgbotapi.NewInputMediaPhoto(tgbotapi.FilePath(path))
+			photo.HasSpoiler = cfg.photoSpoiler
 
 			// Set caption only for the first photo in the group
 			if i == 0 {
