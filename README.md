@@ -77,6 +77,9 @@ library [libvips](https://www.libvips.org/).
 | FM_MEMORIES_CRON_SPEC    | [Cron](https://en.wikipedia.org/wiki/Cron) to send photos from this day in different years. Default ``0 12 * * *``                     |
 | FM_MEMORIES_PHOTO_COUNT  | Total number of photos to send for memories across all years. Default ``5``                                                            |
 | FM_REINDEX_CRON_SPEC     | [Cron](https://en.wikipedia.org/wiki/Cron) for automatic differential reindexing. Default ``0 0 * * 0`` (weekly on Sunday at midnight) |
+| FM_PHOTO_SPOILER         | Send photos with Telegram spoiler blur animation. Set to ``true`` to hide photos until tapped. Default ``false``. |
+| FM_RUSSIAN_ROULETTE      | Enable Russian roulette mode for manual `/photo` commands in non-private chats. Default ``false``. |
+| FM_RUSSIAN_ROULETTE_ADMIN_ID | Telegram user ID allowed to run `/roulette_reset`. |
 
 ### Telegram Proxy Settings (Optional)
 
@@ -102,6 +105,8 @@ library [libvips](https://www.libvips.org/).
 | /reindex diff  | Start differential indexing (only new and modified files)                                                  |
 | /info [number] | Show info about photo - path, time, camera, GPS location. ``number`` - sequence number of last sent photos |
 | /info          | If replying to a specific photo, shows info about that exact photo                                         |
+| /roulette_stats | Show Russian roulette stats for current user                                                               |
+| /roulette_reset | Reset roulette drum and choose a new losing position (admin only)                                         |
 
 ## Contributing
 
