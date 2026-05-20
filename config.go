@@ -19,6 +19,7 @@ var keyDebug = "FM_DEBUG"
 var keyMemoriesCronSpec = "FM_MEMORIES_CRON_SPEC"
 var keyMemoriesPhotoCount = "FM_MEMORIES_PHOTO_COUNT"
 var keyReindexCronSpec = "FM_REINDEX_CRON_SPEC"
+var keyPhotoSpoiler = "FM_PHOTO_SPOILER"
 
 var keyTelegramProxyURL = "FM_TELEGRAM_PROXY_URL"
 var keyTelegramProxyUser = "FM_TELEGRAM_PROXY_USER"
@@ -40,6 +41,7 @@ type Config struct {
 	telegramProxyURL   string
 	telegramProxyUser  string
 	telegramProxyPass  string
+	photoSpoiler       bool
 }
 
 // TODO: rewrite configs with go-flags
@@ -125,6 +127,12 @@ func getConfig() Config {
 		reindexCronSpec = overrideReindexCronSpec
 	}
 
+	photoSpoiler := false
+	overridePhotoSpoiler, err := strconv.ParseBool(os.Getenv(keyPhotoSpoiler))
+	if err == nil {
+		photoSpoiler = overridePhotoSpoiler
+	}
+
 	return Config{
 		chatId:             int64(chatId),
 		allowedUserIds:     allowedUserIds,
@@ -141,5 +149,6 @@ func getConfig() Config {
 		telegramProxyURL:   os.Getenv(keyTelegramProxyURL),
 		telegramProxyUser:  os.Getenv(keyTelegramProxyUser),
 		telegramProxyPass:  os.Getenv(keyTelegramProxyPass),
+		photoSpoiler:       photoSpoiler,
 	}
 }

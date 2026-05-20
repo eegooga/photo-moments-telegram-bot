@@ -77,6 +77,7 @@ library [libvips](https://www.libvips.org/).
 | FM_MEMORIES_CRON_SPEC    | [Cron](https://en.wikipedia.org/wiki/Cron) to send photos from this day in different years. Default ``0 12 * * *``                     |
 | FM_MEMORIES_PHOTO_COUNT  | Total number of photos to send for memories across all years. Default ``5``                                                            |
 | FM_REINDEX_CRON_SPEC     | [Cron](https://en.wikipedia.org/wiki/Cron) for automatic differential reindexing. Default ``0 0 * * 0`` (weekly on Sunday at midnight) |
+| FM_PHOTO_SPOILER         | Send photos with Telegram spoiler blur animation. Set to ``true`` to hide photos until tapped. Default ``false``. |
 
 ### Telegram Proxy Settings (Optional)
 
