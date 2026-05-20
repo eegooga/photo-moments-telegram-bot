@@ -93,8 +93,8 @@ library [libvips](https://www.libvips.org/).
 |----------------|------------------------------------------------------------------------------------------------------------|
 | /start         | Start interacting with the bot                                                                             |
 | /help          | Show help information                                                                                      |
-| /random        | Get a random photo from the archive                                                                        |
-| /random N      | Get N random photos from the archive                                                                       |
+| /photo         | Get a random photo from the archive                                                                        |
+| /photo N       | Get N random photos from the archive                                                                       |
 | /memories      | Get photos taken on this day one year ago                                                                  |
 | /memories N    | Get photos taken on this day N years ago                                                                   |
 | /today         | Get photos taken on this day across different years                                                        |
