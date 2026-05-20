@@ -80,6 +80,7 @@ library [libvips](https://www.libvips.org/).
 | FM_PHOTO_SPOILER         | Send photos with Telegram spoiler blur animation. Set to ``true`` to hide photos until tapped. Default ``false``. |
 | FM_RUSSIAN_ROULETTE      | Enable Russian roulette mode for manual `/photo` commands in non-private chats. Default ``false``. |
 | FM_RUSSIAN_ROULETTE_ADMIN_ID | Telegram user ID allowed to run `/roulette_reset`. |
+| FM_RUSSIAN_ROULETTE_COOLDOWN_MINUTES | Cooldown for roulette attempts in minutes. Default ``60``. |
 
 ### Telegram Proxy Settings (Optional)
 

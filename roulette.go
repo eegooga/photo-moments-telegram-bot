@@ -17,7 +17,7 @@ const rouletteDirName = "RUSSIAN_ROULETTE"
 const rouletteStateFileName = "state.json"
 const rouletteLoseImageName = "you_lose.jpg"
 const rouletteDrumSize = 100
-const rouletteCooldown = 60 * time.Minute
+const defaultRouletteCooldown = 60 * time.Minute
 
 type RouletteUserStats struct {
 	Spins      int       `json:"spins"`
@@ -45,6 +45,13 @@ type RouletteState struct {
 
 var rouletteMu sync.Mutex
 
+func getRouletteCooldown() time.Duration {
+	if cfg.rouletteCooldown <= 0 {
+		return defaultRouletteCooldown
+	}
+	return cfg.rouletteCooldown
+}
+
 func rouletteStatePath() string {
 	return filepath.Join(cfg.photoPath, rouletteDirName, rouletteStateFileName)
 }
@@ -55,13 +62,13 @@ func rouletteLoseImagePath() string {
 
 func defaultRouletteState() *RouletteState {
 	return &RouletteState{Version: 1, DrumSize: rouletteDrumSize, LosingPosition: rand.Intn(rouletteDrumSize), CurrentPosition: 0,
-		CooldownSeconds: int(rouletteCooldown.Seconds()), Users: map[string]*RouletteUserStats{}}
+		CooldownSeconds: int(getRouletteCooldown().Seconds()), Users: map[string]*RouletteUserStats{}}
 }
 
 func normalizeRouletteState(state *RouletteState) {
 	state.Version = 1
 	state.DrumSize = rouletteDrumSize
-	state.CooldownSeconds = int(rouletteCooldown.Seconds())
+	state.CooldownSeconds = int(getRouletteCooldown().Seconds())
 	if state.Users == nil {
 		state.Users = map[string]*RouletteUserStats{}
 	}
@@ -138,7 +145,7 @@ func tryRussianRoulette(update *tgbotapi.Update) (bool, string, error) {
 		state.Users[userKey] = userStats
 	}
 	if !userStats.LastSpinAt.IsZero() {
-		nextAllowed := userStats.LastSpinAt.Add(rouletteCooldown)
+		nextAllowed := userStats.LastSpinAt.Add(getRouletteCooldown())
 		if now.Before(nextAllowed) {
 			left := nextAllowed.Sub(now)
 			return true, "⏳ Roulette cooldown: " + formatCooldownLeft(left), nil
@@ -186,7 +193,7 @@ func getUserRouletteStats(userID int64) (string, error) {
 
 	cooldownText := "ready now"
 	if !userStats.LastSpinAt.IsZero() {
-		nextAllowed := userStats.LastSpinAt.Add(rouletteCooldown)
+		nextAllowed := userStats.LastSpinAt.Add(getRouletteCooldown())
 		if time.Now().UTC().Before(nextAllowed) {
 			cooldownText = formatCooldownLeft(nextAllowed.Sub(time.Now().UTC()))
 		}
