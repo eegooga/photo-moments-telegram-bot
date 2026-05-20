@@ -22,8 +22,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            trueromancha/photo-moments
-            ghcr.io/romancha/photo-moments
+            jeffscrum/BDispatcher
           tags: |
             type=schedule
             type=ref,event=branch
