@@ -208,6 +208,19 @@ func getUserRouletteStats(userID int64) (string, error) {
 		userStats.Spins, userStats.Wins, userStats.Losses, cooldownText, lastLoss), nil
 }
 
+func getRouletteStatus() (string, error) {
+	rouletteMu.Lock()
+	defer rouletteMu.Unlock()
+
+	state, err := loadOrInitRouletteState()
+	if err != nil {
+		return "", err
+	}
+
+	currentPos := state.CurrentPosition + 1
+	return fmt.Sprintf("🎰 Roulette drum position: %d of %d", currentPos, state.DrumSize), nil
+}
+
 func resetRoulette(adminID int64) (string, error) {
 	rouletteMu.Lock()
 	defer rouletteMu.Unlock()
