@@ -73,6 +73,7 @@ library [libvips](https://www.libvips.org/).
 | FM_DB_PATH               | Path to the db file. Default ``photo_moments.db``.                                                                                     |
 | FM_PHOTO_COUNT           | The number of photos that the bot will send according to the schedule. Default ``5``, maximum ``10``                                   |
 | FM_SEND_PHOTOS_BY_NUMBER | Send photos by number. Default ``true``                                                                                                |
+| FM_MEMORIES_ENABLED      | Enable scheduled memories posts. Set to ``false`` to disable the memories cron job. Default ``true``                                  |
 | FM_SEND_PHOTO_CRON_SPEC  | [Cron](https://en.wikipedia.org/wiki/Cron) to send random photos. Default ``0 10 * * *``                                               |
 | FM_MEMORIES_CRON_SPEC    | [Cron](https://en.wikipedia.org/wiki/Cron) to send photos from this day in different years. Default ``0 12 * * *``                     |
 | FM_MEMORIES_PHOTO_COUNT  | Total number of photos to send for memories across all years. Default ``5``                                                            |
