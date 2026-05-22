@@ -19,6 +19,7 @@ var keySendPhotosByNumber = "FM_SEND_PHOTOS_BY_NUMBER"
 var keyDebug = "FM_DEBUG"
 var keyMemoriesCronSpec = "FM_MEMORIES_CRON_SPEC"
 var keyMemoriesPhotoCount = "FM_MEMORIES_PHOTO_COUNT"
+var keyMemoriesEnabled = "FM_MEMORIES_ENABLED"
 var keyReindexCronSpec = "FM_REINDEX_CRON_SPEC"
 var keyPhotoSpoiler = "FM_PHOTO_SPOILER"
 var keyRussianRoulette = "FM_RUSSIAN_ROULETTE"
@@ -41,6 +42,7 @@ type Config struct {
 	debug              bool
 	memoriesCronSpec   string
 	memoriesPhotoCount int
+	memoriesEnabled    bool
 	reindexCronSpec    string // Cron schedule for automatic reindexing
 	telegramProxyURL   string
 	telegramProxyUser  string
@@ -127,6 +129,12 @@ func getConfig() Config {
 		}
 	}
 
+	memoriesEnabled := true
+	overrideMemoriesEnabled, err := strconv.ParseBool(os.Getenv(keyMemoriesEnabled))
+	if err == nil {
+		memoriesEnabled = overrideMemoriesEnabled
+	}
+
 	// Settings for automatic reindexing
 	reindexCronSpec := "0 0 * * 0" // Default at midnight every Sunday
 	overrideReindexCronSpec := os.Getenv(keyReindexCronSpec)
@@ -176,6 +184,7 @@ func getConfig() Config {
 		debug:              debug,
 		memoriesCronSpec:   memoriesCronSpec,
 		memoriesPhotoCount: memoriesPhotoCount,
+		memoriesEnabled:    memoriesEnabled,
 		reindexCronSpec:    reindexCronSpec,
 		telegramProxyURL:   os.Getenv(keyTelegramProxyURL),
 		telegramProxyUser:  os.Getenv(keyTelegramProxyUser),

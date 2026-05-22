@@ -109,11 +109,15 @@ func main() {
 	}
 
 	// Add cron job for sending photos from this day in different years
-	_, err = c.AddFunc(cfg.memoriesCronSpec, func() {
-		sendMemoryPhotos(RequestTypeToday, 0, nil, bot)
-	})
-	if err != nil {
-		panic("Failed to add memories cron job.")
+	if cfg.memoriesEnabled {
+		_, err = c.AddFunc(cfg.memoriesCronSpec, func() {
+			sendMemoryPhotos(RequestTypeToday, 0, nil, bot)
+		})
+		if err != nil {
+			panic("Failed to add memories cron job.")
+		}
+	} else {
+		log.Println("Memories scheduler is disabled via FM_MEMORIES_ENABLED=false")
 	}
 
 	// Add cron job for automatic reindexing
