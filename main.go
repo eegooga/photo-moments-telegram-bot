@@ -144,6 +144,7 @@ func main() {
 		{Command: "reindex", Description: "Start photo reindexing (full/diff)"},
 		{Command: "info", Description: "Show photo info (reply to photo or use /info N for Nth photo)"},
 		{Command: "roulette_stats", Description: "Show your Russian roulette stats"},
+		{Command: "roulette_status", Description: "Show current roulette drum position"},
 		{Command: "roulette_reset", Description: "Reset roulette drum (admin only)"},
 	}
 
@@ -219,6 +220,15 @@ func main() {
 						break
 					}
 					sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot, stats)
+
+				case "roulette_status":
+					status, err := getRouletteStatus()
+					if err != nil {
+						sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot,
+							fmt.Sprintf("Error loading roulette status: %v", err))
+						break
+					}
+					sendSafeReplyText(update.Message.Chat.ID, update.Message.MessageID, bot, status)
 
 				case "roulette_reset":
 					if update.Message.From.ID != cfg.rouletteAdminID {
