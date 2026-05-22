@@ -108,6 +108,7 @@ library [libvips](https://www.libvips.org/).
 | /info [number] | Show info about photo - path, time, camera, GPS location. ``number`` - sequence number of last sent photos |
 | /info          | If replying to a specific photo, shows info about that exact photo                                         |
 | /roulette_stats | Show Russian roulette stats for current user                                                               |
+| /roulette_status | Show current roulette drum position (e.g. ``21 of 100``)                                                  |
 | /roulette_reset | Reset roulette drum and choose a new losing position (admin only)                                         |
 
 ## Contributing
